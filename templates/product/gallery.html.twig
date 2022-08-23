@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify@3.1.0/dist/tagify.css" />
+  	<script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify@3.1.0/dist/tagify.min.js"></script>
+  	<script src="https://cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+    <title>Gallery Product</title>
+    <style>
+      .img-thumbnail{
+        height: 200px;
+        width: 250px;
+      }
+      .gallery .card {
+        border: none;
+      }
+      .logout-button{
+        float: right;
+      }
+    </style>
+  </head>
+  <body>
+  	<div class="container">
+  		{% if app.user %}
+        <div class="mb-3">
+            You are logged in as {{ app.user.userIdentifier }}<a href="{{ path('app_logout') }}"><button class="btn btn-success logout-button">Logout</button></a>
+        </div>
+      {% endif %}
+  		<h2 >Gallery Product</h2>
+      <form action="{{ path('gallery') }}" method="GET">
+        <div class="row">
+            <div class="col-4">
+              <input type="text" class="form-control"name="tag" value="{{tag}}" placeholder="Serach product by tags">
+            </div>
+            <div class="col-4">
+              <input type="text" class="form-control" value="{{provider}}" name="provider" placeholder="Serach product by provider">
+            </div>
+            <div class="col-4">
+              <button  class="btn btn-success" type="submit">Serach</button>
+               <a href="/gallery" class="btn btn-warning" type="submit">Remove Filters</a>
+              {% if (role) =="STAFF" %}
+              <a href="/showmygallery" class="btn btn-warning" type="submit">My Gallery</a>
+              {% endif %}
+              {% if (role) =="ADMIN" %}
+              <a href="/product/create" class="btn btn-primary" type="submit">Create Product</a>
+              {% endif %}
+            </div>
+        </div>
+
+        <br/>
+      </form>
+	    <div class="gallery row row-cols-5">
+        {% for item in product %}
+       <div class="card col">
+          <img src="/uploads/{{ item.image }}" class="card-img-top" alt="" height="200" width="200">
+          <div class="card-body">
+            <h5 class="card-title">{{ item.name }}</h5>
+            <p class="card-text">
+              Provider: {{ item.provider }}
+              <br/>
+              Tags: {{ item.tag }}
+            </p>
+            {% if (role) =="STAFF" %}
+            <button value="{{ item.id }}" class="btn btn-primary add">Add to Gallery</button>
+            {% endif %}
+          </div>
+        </div>
+
+      {% endfor %}
+      </div>
+      {% if (total_pages) %}
+        <nav aria-label="Page navigation example">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-end">
+              <li class="page-item  {% if (page)<=1 %} disabled  {% endif %}">
+               
+                <a class="page-link " href="{{path('gallery')}}?page_num={{page-1}}&tag={{tag}}&provider={{provider}} ">Previous</a>
+                
+              </li>
+       
+           {% for i in range(1, total_pages) %}
+             <li class="page-item {% if page == i %} active  {% endif %}">
+              <a class="page-link" href="{{ path('gallery') }}?page_num={{i}}&tag={{tag}}&provider={{provider}}">{{i}}</a></li>
+            {% endfor %}
+             
+              <li class="page-item {% if page == total_pages %} disabled  {% endif %}">
+                <a class="page-link " href="{{path('gallery')}}?page_num={{page+1}}&tag={{tag}}&provider={{provider}} ">Next</a>
+              </li>
+            </ul>
+          </nav>
+          {% else%}
+          <div class="container">There is no data retlated to this search.</div>
+       {% endif %}
+	</div>
+
+    <!-- Option 1: Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+		var input = document.querySelector('input[name=tags]');
+	    var tagify = new Tagify(input);
+
+        $(".add").click(function() {
+          var data = $(this).val();
+          $.ajax({
+            url: '{{path('myGallery')}}',
+            type: 'GET',
+            data: {data},
+            success: function(response) {
+              if(response.status=="true"){
+                alert("Product added in my gallery.");
+              }else{
+                alert("Product already added.");
+              }
+            }
+          });
+        });
+
+
+    </script>
+  </body>
+</html>

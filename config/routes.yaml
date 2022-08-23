@@ -1,0 +1,35 @@
+controllers:
+    resource: ../src/Controller/
+    type: annotation
+
+kernel:
+    resource: ../src/Kernel.php
+    type: annotation
+
+# the "app_lucky_number" route name is not important yet
+product_create:
+    path: /product/create
+    controller: App\Controller\ProductController::create
+
+product_save:
+    path: /product/save
+    controller: App\Controller\ProductController::save
+
+index:
+    path: /
+    controller: App\Controller\SecurityController::send_to_login
+
+gallery:
+    path: /gallery
+    controller: App\Controller\ProductController::gallery
+
+myGallery:
+    path: /myGallery
+    controller: App\Controller\ProductController::myGallery
+
+showmygallery:
+    path: /showmygallery
+    controller: App\Controller\ProductController::show_myGallery
+
+
+
